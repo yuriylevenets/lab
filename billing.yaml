@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+   name: billing-service
+spec:
+   strategy:
+    type: Recreate
+   selector:
+    matchLabels:
+      app: billing-service
+   template:
+    metadata:
+      labels:
+        app: billing-service
+    spec:
+      containers:
+      - name: billing-service
+        image: skannte/billing-service:latest
+        imagePullPolicy: Always
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Production
+        - name: BillingServicePath
+          value: /usr/data
+        ports:
+        - containerPort: 5006 
+        volumeMounts:
+        - name: sqlite-volume
+          mountPath: /usr/data
+      volumes:
+      - name: sqlite-volume
+        persistentVolumeClaim:
+          claimName: sqlite-pvc
+
+
+  
